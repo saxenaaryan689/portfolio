@@ -1,6 +1,6 @@
 
 /* ═══════════════════════════════════════════════
-   ANURAG KUMAR PORTFOLIO — script.js
+   ARYAN SAXENA PORTFOLIO — script.js
    ═══════════════════════════════════════════════ */
 
 /* 1. PARTICLE BACKGROUND */
@@ -50,7 +50,7 @@
     draw() {
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(167,139,250,${this.alpha})`;
+      ctx.fillStyle = `rgba(125,211,252,${this.alpha})`;
       ctx.fill();
     }
   }
@@ -85,7 +85,7 @@
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
           ctx.strokeStyle =
-            `rgba(124,58,237,${0.07 * (1 - d / 110)})`;
+            `rgba(56,189,248,${0.14 * (1 - d / 110)})`;
           ctx.lineWidth = 0.5;
           ctx.stroke();
         }
@@ -128,7 +128,7 @@
   const edgesGeo = new THREE.EdgesGeometry(outerGeo);
 
   const wireMat = new THREE.LineBasicMaterial({
-    color: 0x7c3aed
+    color: 0x38bdf8
   });
 
   const wireframe = new THREE.LineSegments(edgesGeo, wireMat);
@@ -137,9 +137,9 @@
   const innerGeo = new THREE.OctahedronGeometry(0.72, 0);
 
   const innerMat = new THREE.MeshBasicMaterial({
-    color: 0x4f46e5,
+    color: 0x0284c7,
     transparent: true,
-    opacity: 0.1,
+    opacity: 0.18,
     side: THREE.DoubleSide
   });
 
@@ -166,7 +166,7 @@
   );
 
   const dotMat = new THREE.PointsMaterial({
-    color: 0xa78bfa,
+    color: 0x7dd3fc,
     size: 0.05
   });
 
@@ -240,43 +240,56 @@
 })();
 
 
-/* 4. LEETCODE COUNTER */
+/* 4. STATS COUNTER ANIMATION */
 (function () {
-  const el = document.getElementById("lc-count");
-  if (!el) return;
+  const statItems = document.querySelectorAll(".hero-stats .stat-num");
+  const statsWrap = document.querySelector(".hero-stats");
+  if (!statItems.length) return;
 
-  const target = 201;
-  let current = 0;
   let started = false;
 
-  function countUp() {
-    if (current < target) {
-      current += 1;
-      el.textContent = current;
-      setTimeout(countUp, 12);
-    } else {
-      el.textContent = target;
-    }
-  }
+  function animateStat(el) {
+    const target = parseFloat(el.getAttribute("data-target")) || parseFloat(el.textContent) || 0;
+    const decimal = parseInt(el.getAttribute("data-decimal"), 10) || 0;
+    const suffix = el.getAttribute("data-suffix") || "";
+    const duration = 1200;
+    const startTime = performance.now();
 
-  const card = document.querySelector(".leetcode-badge-card");
+    function step(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const val = ease * target;
 
-  if (!card || !("IntersectionObserver" in window)) {
-    countUp();
-    return;
-  }
+      el.textContent = (decimal > 0 ? val.toFixed(decimal) : Math.floor(val)) + (progress === 1 ? suffix : "");
 
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting && !started) {
-        started = true;
-        countUp();
-        obs.unobserve(entry.target);
+      if (progress < 1) {
+        requestAnimationFrame(step);
       }
-    });
-  }, { threshold: 0.4 });
+    }
 
-  obs.observe(card);
+    requestAnimationFrame(step);
+  }
+
+  function startAll() {
+    if (started) return;
+    started = true;
+    statItems.forEach(animateStat);
+  }
+
+  if (statsWrap && "IntersectionObserver" in window) {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          startAll();
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(statsWrap);
+  } else {
+    setTimeout(startAll, 400);
+  }
 })();
 
 
@@ -309,12 +322,18 @@
 
   function onScroll() {
     let current = "";
+    const scrollPos = window.scrollY;
 
-    sections.forEach((section) => {
-      if (window.scrollY >= section.offsetTop - 220) {
-        current = section.id;
-      }
-    });
+    if (window.innerHeight + scrollPos >= document.body.offsetHeight - 80) {
+      const last = sections[sections.length - 1];
+      if (last) current = last.id;
+    } else {
+      sections.forEach((section) => {
+        if (scrollPos >= section.offsetTop - 220) {
+          current = section.id;
+        }
+      });
+    }
 
     navLinks.forEach((a) => {
       a.classList.toggle(
@@ -336,7 +355,8 @@
 
   if (!btn || !sidebar) return;
 
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
     sidebar.classList.toggle("open");
   });
 
@@ -344,6 +364,12 @@
     a.addEventListener("click", () => {
       sidebar.classList.remove("open");
     });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (sidebar.classList.contains("open") && !sidebar.contains(e.target) && !btn.contains(e.target)) {
+      sidebar.classList.remove("open");
+    }
   });
 })();
 
