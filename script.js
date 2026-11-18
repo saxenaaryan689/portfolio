@@ -285,10 +285,10 @@
           obs.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.3 });
+    }, { threshold: 0.05 });
     obs.observe(statsWrap);
   } else {
-    setTimeout(startAll, 400);
+    setTimeout(startAll, 300);
   }
 })();
 
@@ -297,21 +297,32 @@
 (function () {
   const elements = document.querySelectorAll(".reveal");
 
+  function revealNow(el) {
+    el.classList.add("visible");
+  }
+
   if (!("IntersectionObserver" in window)) {
-    elements.forEach(el => el.classList.add("visible"));
+    elements.forEach(revealNow);
     return;
   }
 
   const obs = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
+        revealNow(entry.target);
         obs.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
 
-  elements.forEach(el => obs.observe(el));
+  elements.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      revealNow(el);
+    } else {
+      obs.observe(el);
+    }
+  });
 })();
 
 
@@ -397,11 +408,26 @@
 (function () {
   document.querySelectorAll(".skill-tag").forEach((tag) => {
     tag.addEventListener("mouseenter", () => {
-      tag.style.transform = "scale(1.07)";
+      tag.style.transform = "translateY(-2px)";
     });
 
     tag.addEventListener("mouseleave", () => {
       tag.style.transform = "";
+    });
+  });
+})();
+
+
+/* 10. PROJECT CARD CURSOR SPOTLIGHT */
+(function () {
+  const cards = document.querySelectorAll(".project-card");
+  cards.forEach((card) => {
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      card.style.setProperty("--mouse-x", `${x}px`);
+      card.style.setProperty("--mouse-y", `${y}px`);
     });
   });
 })();
