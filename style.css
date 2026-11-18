@@ -471,6 +471,7 @@ section {
 .name-gradient {
   background: linear-gradient(135deg, #ffffff 20%, #bae6fd 60%, #38bdf8 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   filter: drop-shadow(0 2px 18px rgba(56, 189, 248, 0.3));
@@ -547,6 +548,7 @@ section {
   font-family: 'JetBrains Mono', monospace;
   background: linear-gradient(135deg, #ffffff, #7dd3fc);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1;
 }
@@ -598,6 +600,7 @@ section {
   line-height: 1.1;
   background: linear-gradient(135deg, #ffffff 40%, #e0f2fe 75%, #7dd3fc 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
